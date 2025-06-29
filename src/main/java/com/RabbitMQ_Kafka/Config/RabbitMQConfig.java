@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
+
+    // ### Direct
     @Value("${sample.rabbitmq.payment.queue}")
     String paymentQueue;
     @Value("${sample.rabbitmq.shipping.queue}")
@@ -36,7 +38,9 @@ public class RabbitMQConfig {
     @Value("${sample.rabbitmq.receipt.routingKey}")
     String receiptRoutingKey;
 
-    // Fanout
+    // ### Direct ###
+
+    // ### Fanout
 
     @Value("${sample.rabbitmq.animal.exchange}")
     String animalExchange;
@@ -45,6 +49,39 @@ public class RabbitMQConfig {
     @Value("${sample.rabbitmq.horse.queue}")
     String horseQueue;
 
+    // ### Fanout ###
+
+    // ### Topic
+
+    @Value("${sample.rabbitmq.dress.exchange}")
+    String dressExchange;
+    @Value("${sample.rabbitmq.blacks.queue}")
+    String blackQueue;
+    @Value("${sample.rabbitmq.whites.queue}")
+    String whiteQueue;
+    @Value("${sample.rabbitmq.colors.queue}")
+    String colorQueue;
+    @Value("${sample.rabbitmq.delicates.queue}")
+    String delicatesQueue;
+    @Value("${sample.rabbitmq.allColors.queue}")
+    String allColorQueue;
+
+
+    @Value("${sample.rabbitmq.whites.routingKey}")
+    String whiteRoutingKey;
+    @Value("${sample.rabbitmq.blacks.routingKey}")
+    String blackRoutingKey;
+    @Value("${sample.rabbitmq.colors.routingKey}")
+    String colorRoutingKey;
+    @Value("${sample.rabbitmq.delicates.routingKey}")
+    String delicateRoutingKey;
+    @Value("${sample.rabbitmq.allColors.routingKey}")
+    String allColorRoutingKey;
+
+
+
+
+    // ### Topic ###
 
 
 
@@ -134,5 +171,55 @@ public class RabbitMQConfig {
     public Binding horseBindingFanout(FanoutExchange exchange, Queue horseQueue) {
         return BindingBuilder.bind(horseQueue).to(exchange);
     }
+
+
+    // ### Topic
+
+    @Bean
+    public TopicExchange dressExchange() {
+        return new TopicExchange(dressExchange);
+    }
+    @Bean
+    public Queue blackQueue() {
+        return new Queue(blackQueue,false);
+    }
+    @Bean
+    public Queue whiteQueue() {
+        return new Queue(whiteQueue,false);
+    }
+    @Bean
+    public Queue colorQueue() {
+        return new Queue(colorQueue,false);
+    }
+    @Bean
+    public Queue delicateQueue() {
+        return new Queue(delicatesQueue,false);
+    }
+    @Bean
+    public Queue allColorQueue() {
+        return new Queue(allColorQueue,false);
+    }
+    @Bean
+    public Binding bindingBlack(){
+        return BindingBuilder.bind(blackQueue()).to(dressExchange()).with(blackRoutingKey);
+    }
+    @Bean
+    public Binding bindingWhite(){
+        return BindingBuilder.bind(whiteQueue()).to(dressExchange()).with(whiteRoutingKey);
+    }
+    @Bean
+    public Binding bindingColor(){
+        return BindingBuilder.bind(colorQueue()).to(dressExchange()).with(colorRoutingKey);
+    }
+    @Bean
+    public Binding bindingDelicate(){
+        return BindingBuilder.bind(delicateQueue()).to(dressExchange()).with(delicateRoutingKey);
+    }
+    @Bean
+    public Binding bindingAllColor(){
+        return BindingBuilder.bind(allColorQueue()).to(dressExchange()).with(allColorRoutingKey);
+    }
+
+    // ### Topic ###
 
 }
