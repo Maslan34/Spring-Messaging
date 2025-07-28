@@ -2,13 +2,14 @@ package com.RabbitMQ_Kafka.messaging.rabbit.consumer;
 
 import com.RabbitMQ_Kafka.Model.CateringCreated;
 import com.RabbitMQ_Kafka.Model.Wedding;
-import com.RabbitMQ_Kafka.Service.EntertainmentService;
+import com.RabbitMQ_Kafka.Service.rabbit.EntertainmentService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-
+@Profile("rabbit")
 @Component
 public class EntertainmentConsumer {
     private final RabbitTemplate rabbitTemplate;

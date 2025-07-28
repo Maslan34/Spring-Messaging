@@ -1,10 +1,11 @@
 package com.RabbitMQ_Kafka.messaging.rabbit.consumer;
 
 import com.RabbitMQ_Kafka.Model.Wedding;
-import com.RabbitMQ_Kafka.Service.VenueService;
+import com.RabbitMQ_Kafka.Service.rabbit.VenueService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
+@Profile("rabbit")
 @Component
 public class VenueConsumer {
 

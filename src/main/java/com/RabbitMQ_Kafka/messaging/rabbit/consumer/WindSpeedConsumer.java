@@ -1,11 +1,13 @@
 package com.RabbitMQ_Kafka.messaging.rabbit.consumer;
 
 import com.RabbitMQ_Kafka.Model.WindData;
-import com.RabbitMQ_Kafka.Service.BridgeService;
+import com.RabbitMQ_Kafka.Service.rabbit.BridgeService;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile("rabbit")
 @Component
 public class WindSpeedConsumer {
 

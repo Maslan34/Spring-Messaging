@@ -2,12 +2,14 @@ package com.RabbitMQ_Kafka.messaging.rabbit.consumer;
 
 import com.RabbitMQ_Kafka.Model.Water;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile("rabbit")
 @Component
 public class WaterDrain {
 
-
+    @Profile("rabbit")
     @Component
     public static class WaterDrainerA {
 
@@ -17,7 +19,7 @@ public class WaterDrain {
             Thread.sleep(1000); // water extraction time
         }
     }
-
+    @Profile("rabbit")
     @Component
     public static class WaterDrainerB {
 

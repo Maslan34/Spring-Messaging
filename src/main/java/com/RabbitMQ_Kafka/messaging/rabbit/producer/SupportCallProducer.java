@@ -4,8 +4,11 @@ package com.RabbitMQ_Kafka.messaging.rabbit.producer;
 import com.RabbitMQ_Kafka.Model.Call;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+
+@Profile("rabbit")
 @Component
 public class SupportCallProducer {
 
