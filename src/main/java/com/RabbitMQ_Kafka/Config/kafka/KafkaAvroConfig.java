@@ -1,8 +1,10 @@
 package com.RabbitMQ_Kafka.Config.kafka;
 
-import com.KafkaRAbbitMQ.avro.StockAvro;
+
+import com.KafkaRabbitMQ.avro.StockAvro;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -10,6 +12,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
 
 import java.util.HashMap;
@@ -18,6 +21,14 @@ import java.util.Map;
 @Configuration
 public class KafkaAvroConfig {
 
+
+    @Bean
+    public NewTopic avroTopic() {
+        return TopicBuilder.name("avro-topic")
+                .partitions(1)
+                .config("cleanup.policy", "compact")
+                .build();
+    }
 
     @Bean
     public ProducerFactory<String, StockAvro> producerFactory() {
