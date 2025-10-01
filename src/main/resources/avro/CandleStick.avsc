@@ -1,0 +1,39 @@
+{
+  "type": "record",
+  "name": "CandleStick",
+  "namespace": "com.KafkaRabbitMQ.avro",
+  "fields": [
+    {
+      "name": "symbol",
+      "type": "string"
+    },
+    {
+      "name": "openPrice",
+      "type": "double"
+    },
+    {
+      "name": "closePrice",
+      "type": "double"
+    },
+    {
+      "name": "highPrice",
+      "type": "double"
+    },
+    {
+      "name": "lowPrice",
+      "type": "double"
+    },
+    {
+      "name": "volume",
+      "type": "long"
+    },
+    {
+      "name": "startTime",
+      "type": "long"
+    },
+    {
+      "name": "endTime",
+      "type": "long"
+    }
+  ]
+}

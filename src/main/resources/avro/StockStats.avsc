@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "StockStats",
+  "namespace": "com.KafkaRabbitMQ.avro",
+  "fields": [
+    {"name": "symbol", "type": "string"},
+    {"name": "totalQuantity", "type": "int"},
+    {"name": "averagePrice", "type": "double"},
+    {"name": "count", "type": "int"}
+  ]
+}

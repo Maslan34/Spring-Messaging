@@ -4,6 +4,7 @@ package com.RabbitMQ_Kafka.Controller.kafka;
 import com.KafkaRabbitMQ.avro.StockAvro;
 import com.RabbitMQ_Kafka.messaging.kafka.producer.KafkaStockProducer;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/kafka/avro")
+@Profile("kafka-streams-stock")
 public class KafkaStockController {
 
 

@@ -1,0 +1,19 @@
+{
+  "type": "record",
+  "name": "Company",
+  "namespace": "com.KafkaRabbitMQ.avro",
+  "fields": [
+    {
+      "name": "symbol",
+      "type": "string"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "sector",
+      "type": "string"
+    }
+  ]
+}
