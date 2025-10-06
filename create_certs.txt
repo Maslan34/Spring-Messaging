@@ -1,0 +1,149 @@
+================================================================================
+  KAFKA SSL CERTIFICATE CREATION STEPS (FROM SCRATCH)
+================================================================================
+
+STEP 1: Navigate to the directory
+--------------------------------------------------------------------------------
+cd ................./Kafka-RabbitMq/certs
+
+
+STEP 2: Cleanup (delete old files)
+--------------------------------------------------------------------------------
+rm -f *.jks *.csr *-signed.cert ca-cert ca-key ca-cert.srl keystore_creds key_creds truststore_creds
+
+
+STEP 3: Create CA Private Key
+--------------------------------------------------------------------------------
+openssl genrsa -des3 -out ca-key 2048
+
+** It will ask for password: Enter 123456 (twice)
+
+
+STEP 4: Create CA Certificate
+--------------------------------------------------------------------------------
+openssl req -new -x509 -key ca-key -out ca-cert -days 365 -subj "/CN=Root CA" -passin pass:123456
+
+
+STEP 5: Create Server Keystore (with SAN for localhost)
+--------------------------------------------------------------------------------
+keytool -genkeypair -alias server -keystore kafka.server.keystore.jks -dname "CN=localhost" -ext "SAN=dns:localhost" -keyalg RSA -validity 365 -storepass 123456 -keypass 123456
+
+
+STEP 6: Create Server CSR
+--------------------------------------------------------------------------------
+keytool -certreq -alias server -keystore kafka.server.keystore.jks -file server.csr -storepass 123456
+
+
+STEP 7: Sign Server Certificate
+--------------------------------------------------------------------------------
+openssl x509 -req -CA ca-cert -CAkey ca-key -in server.csr -out server-signed.cert -days 365 -CAcreateserial -passin pass:123456
+
+
+STEP 8: Import CA into Server Keystore
+--------------------------------------------------------------------------------
+keytool -keystore kafka.server.keystore.jks -alias CARoot -importcert -file ca-cert -storepass 123456 -noprompt
+
+
+STEP 9: Import Server Certificate into Server Keystore
+--------------------------------------------------------------------------------
+keytool -keystore kafka.server.keystore.jks -alias server -importcert -file server-signed.cert -storepass 123456 -noprompt
+
+
+STEP 10: Create Client Keystore
+--------------------------------------------------------------------------------
+keytool -genkeypair -alias client -keystore kafka.client.keystore.jks -dname "CN=client" -keyalg RSA -validity 365 -storepass 123456 -keypass 123456
+
+
+STEP 11: Create Client CSR
+--------------------------------------------------------------------------------
+keytool -certreq -alias client -keystore kafka.client.keystore.jks -file client.csr -storepass 123456
+
+
+STEP 12: Sign Client Certificate
+--------------------------------------------------------------------------------
+openssl x509 -req -CA ca-cert -CAkey ca-key -in client.csr -out client-signed.cert -days 365 -CAcreateserial -passin pass:123456
+
+
+STEP 13: Import CA into Client Keystore
+--------------------------------------------------------------------------------
+keytool -keystore kafka.client.keystore.jks -alias CARoot -importcert -file ca-cert -storepass 123456 -noprompt
+
+
+STEP 14: Import Client Certificate into Client Keystore
+--------------------------------------------------------------------------------
+keytool -keystore kafka.client.keystore.jks -alias client -importcert -file client-signed.cert -storepass 123456 -noprompt
+
+
+STEP 15: Create Server Truststore
+--------------------------------------------------------------------------------
+keytool -keystore kafka.server.truststore.jks -alias CARoot -importcert -file ca-cert -storepass 123456 -noprompt
+
+
+STEP 16: Create Client Truststore
+--------------------------------------------------------------------------------
+keytool -keystore kafka.client.truststore.jks -alias CARoot -importcert -file ca-cert -storepass 123456 -noprompt
+
+
+STEP 17: Create Credential files
+--------------------------------------------------------------------------------
+echo "123456" > keystore_creds
+
+echo "123456" > key_creds
+
+echo "123456" > truststore_creds
+
+
+================================================================================
+VERIFICATION COMMANDS
+================================================================================
+
+List Server Keystore contents:
+keytool -list -v -keystore kafka.server.keystore.jks -storepass 123456
+
+List Client Keystore contents:
+keytool -list -v -keystore kafka.client.keystore.jks -storepass 123456
+
+List Server Truststore contents:
+keytool -list -v -keystore kafka.server.truststore.jks -storepass 123456
+
+List Client Truststore contents:
+keytool -list -v -keystore kafka.client.truststore.jks -storepass 123456
+
+View CA Certificate:
+openssl x509 -in ca-cert -text -noout
+
+
+================================================================================
+EXPECTED OUTPUT FILES
+================================================================================
+
+1. kafka.server.keystore.jks      - Server keystore (contains server private key and certificate)
+2. kafka.server.truststore.jks    - Server truststore (contains CA certificate)
+3. kafka.client.keystore.jks      - Client keystore (contains client private key and certificate)
+4. kafka.client.truststore.jks    - Client truststore (contains CA certificate)
+5. ca-cert                        - CA certificate (public)
+6. ca-key                         - CA private key (keep secure!)
+7. keystore_creds                 - Keystore password file
+8. key_creds                      - Key password file
+9. truststore_creds               - Truststore password file
+10. server-signed.cert            - Signed server certificate
+11. client-signed.cert            - Signed client certificate
+12. server.csr                    - Server certificate signing request
+13. client.csr                    - Client certificate signing request
+14. ca-cert.srl                   - CA serial number file
+
+
+================================================================================
+NOTES
+================================================================================
+
+- All passwords in this example are set to: 123456
+- This is for EDUCATIONAL purposes only
+- NEVER use these certificates in production
+- Certificate validity: 365 days
+- Always use strong passwords in production environments
+- Keep ca-key file secure and never share it
+
+================================================================================
+END OF DOCUMENT
+================================================================================
