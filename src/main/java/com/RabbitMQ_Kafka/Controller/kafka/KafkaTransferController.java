@@ -2,9 +2,9 @@ package com.RabbitMQ_Kafka.Controller.kafka;
 
 import com.RabbitMQ_Kafka.Model.FootballPlayer;
 import com.RabbitMQ_Kafka.Service.kafka.TransferService;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/kafka/transfers")
+@Profile("kafka")
 public class KafkaTransferController {
 
     private final TransferService transferService;
@@ -26,15 +27,15 @@ public class KafkaTransferController {
     @PostMapping
     public ResponseEntity<FootballPlayer> createTransfer(@RequestBody TransferRequest request) {
 
-        FootballPlayer player=new FootballPlayer();
-        try{
+        FootballPlayer player = new FootballPlayer();
+        try {
             player = transferService.transferPlayer(
                     request.getPlayerName(),
                     request.getFromTeam(),
                     request.getToTeam(),
                     request.getFee()
             );
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Mapper SerDe Fail!");
             System.out.println(e.getMessage());
         }
@@ -49,7 +50,9 @@ public class KafkaTransferController {
     @Setter
     static public class TransferRequest {
 
-        public TransferRequest(){} // Required for Jackson. Without this, it cannot be instantiated.
+        public TransferRequest() {
+        } // Required for Jackson. Without this, it cannot be instantiated.
+
         private String playerName;
         private String fromTeam;
         private String toTeam;

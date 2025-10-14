@@ -2,6 +2,7 @@ package com.RabbitMQ_Kafka.messaging.kafka.producer;
 
 import com.RabbitMQ_Kafka.Model.OutboxEvent;
 import com.RabbitMQ_Kafka.Repository.OutboxRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@Profile("kafka")
 public class KafkaTransferProducer {
     private final OutboxRepository outboxRepo;
     private final KafkaTemplate<String, String> kafkaTemplate;

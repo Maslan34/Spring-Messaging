@@ -2,10 +2,12 @@ package com.RabbitMQ_Kafka.messaging.kafka.consumer;
 
 import com.RabbitMQ_Kafka.Model.Baggage;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("kafka")
 public class KafkaBaggageConsumer {
 
 

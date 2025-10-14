@@ -1,6 +1,7 @@
 package com.RabbitMQ_Kafka.Controller.kafka;
 
 import com.RabbitMQ_Kafka.messaging.kafka.producer.KafkaLibraryProducer;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/kafka/library")
+@Profile("kafka")
 public class KafkaLibraryController {
 
 

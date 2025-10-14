@@ -2,6 +2,7 @@ package com.RabbitMQ_Kafka.messaging.kafka.consumer;
 
 
 import com.RabbitMQ_Kafka.Model.Ticket;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Random;
 
 @Component
+@Profile("kafka")
 public class KafkaTicketConsumer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;

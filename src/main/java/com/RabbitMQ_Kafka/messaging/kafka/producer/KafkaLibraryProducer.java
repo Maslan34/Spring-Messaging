@@ -2,10 +2,12 @@ package com.RabbitMQ_Kafka.messaging.kafka.producer;
 
 
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("kafka")
 public class KafkaLibraryProducer {
 
 

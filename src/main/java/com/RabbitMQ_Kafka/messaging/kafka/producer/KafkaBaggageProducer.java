@@ -2,12 +2,14 @@ package com.RabbitMQ_Kafka.messaging.kafka.producer;
 
 import com.RabbitMQ_Kafka.Model.Baggage;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
+@Profile("kafka")
 public class KafkaBaggageProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 

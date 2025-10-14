@@ -1,6 +1,7 @@
 package com.RabbitMQ_Kafka.Controller.kafka;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/kafka/game")
+@Profile("kafka")
 public class KafkaOnlineGameController {
 
     private final KafkaTemplate<String, String> stringKafkaTemplate;
