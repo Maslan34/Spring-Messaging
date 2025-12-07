@@ -23,10 +23,10 @@ public class HeadersExchangeConfig {
     String egeStormAllQueue;
     @Value("${sample.rabbitmq.ege.any.queue}")
     String egeAnyQueue;
-    @Value("${sample.rabbitmq.karadeniz.storm.all.queue}")
-    String karadenizStormAllQueue;
-    @Value("${sample.rabbitmq.karadeniz.any.queue}")
-    String karadenizAnyQueue;
+    @Value("${sample.rabbitmq.blacksea.storm.all.queue}")
+    String blackseaStormAllQueue;
+    @Value("${sample.rabbitmq.blacksea.any.queue}")
+    String blackseaAnyQueue;
 
     @Bean
     public HeadersExchange weatherExchange() {
@@ -44,14 +44,15 @@ public class HeadersExchangeConfig {
     }
 
     @Bean
-    public Queue karadenizStormAllQueue() {
-        return new Queue(karadenizStormAllQueue,false);
+    public Queue blackseaStormAllQueue() {
+        return new Queue(blackseaStormAllQueue, false);
     }
 
     @Bean
-    public Queue karadenizAnyQueue() {
-        return new Queue(karadenizAnyQueue,false);
+    public Queue blackseaAnyQueue() {
+        return new Queue(blackseaAnyQueue,false);
     }
+
 
 
     @Bean
@@ -62,7 +63,8 @@ public class HeadersExchangeConfig {
 
         return BindingBuilder.bind(egeStormAllQueue)
                 .to(weatherExchange)
-                .whereAll(headers)
+                .whereAll(headers) // The 'all' here basically acts like 'and'.
+
                 .match();
     }
 
@@ -70,33 +72,31 @@ public class HeadersExchangeConfig {
     public Binding bindingEgeAny(Queue egeAnyQueue, HeadersExchange weatherExchange) {
         Map<String, Object> headers = new HashMap<>();
         headers.put("region", "ege");
-        headers.put("event", "storm");
 
         return BindingBuilder.bind(egeAnyQueue)
                 .to(weatherExchange)
-                .whereAny(headers)
+                .whereAny(headers) // // The 'any' here basically acts like 'or'.
                 .match();
     }
 
     @Bean
-    public Binding bindingKaradenizFirtinaAll(Queue karadenizStormAllQueue, HeadersExchange weatherExchange) {
+    public Binding bindingBlackSeaStormAll(Queue blackseaStormAllQueue, HeadersExchange weatherExchange) {
         Map<String, Object> headers = new HashMap<>();
-        headers.put("region", "karadeniz");
+        headers.put("region", "blacksea");
         headers.put("event", "storm");
 
-        return BindingBuilder.bind(karadenizStormAllQueue)
+        return BindingBuilder.bind(blackseaStormAllQueue)
                 .to(weatherExchange)
                 .whereAll(headers)
                 .match();
     }
 
     @Bean
-    public Binding karadenizAny(Queue karadenizAnyQueue, HeadersExchange weatherExchange) {
+    public Binding blackseaAny(Queue blackseaAnyQueue, HeadersExchange weatherExchange) {
         Map<String, Object> headers = new HashMap<>();
-        headers.put("region", "karadeniz");
-        headers.put("event", "storm");
+        headers.put("region", "blacksea");
 
-        return BindingBuilder.bind(karadenizAnyQueue)
+        return BindingBuilder.bind(blackseaAnyQueue)
                 .to(weatherExchange)
                 .whereAny(headers)
                 .match();

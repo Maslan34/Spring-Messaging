@@ -26,24 +26,26 @@ public class WeatherProducer {
 
     public void pushWeather(Weather weather) {
 
-        // Burada convertAndSend kullanmıyoruz çünkü artık header kımsını biz manuel olarak değiştiriyoruz.
-        // Diğer türlü kafka bunu bizim için yapıyordu.
+        // We are not using convertAndSend here because we are now modifying the header section manually.
+        // Otherwise, RabbitMQ would handle this part for us.
+
 
         MessageProperties props = new MessageProperties();
         String msg;
 
-        System.out.println(weather);
-        if(weather.getRegion().equals("KARADENIZ") && weather.getEvent().equals("FIRTINA")){
+        props.setContentType(MessageProperties.CONTENT_TYPE_TEXT_PLAIN); // We dont use json
+        //System.out.println(weather);
+        if(weather.getRegion().equals("BLACKSEA") && weather.getEvent().equals("STORM")){
              msg = "⛈️ Thunderstorm warning in the Black Sea region.Temperature: " +weather.getTemperature();
-            props.setHeader("region", "karadeniz");
-            props.setHeader("event", "firtina");
-        }else if(weather.getRegion().equals("EGE") && weather.getEvent().equals("FIRTINA")){
+            props.setHeader("region", "blacksea");
+            props.setHeader("event", "storm");
+        }else if(weather.getRegion().equals("EGE") && weather.getEvent().equals("STORM")){
             msg = "⛈️ Thunderstorm warning in the Ege region.Temperature: " +weather.getTemperature();
             props.setHeader("region", "ege");
-            props.setHeader("event", "firtina");
+            props.setHeader("event", "storm");
         }
         else{
-            msg = "A weather event:.Temperature: " +weather.getTemperature();
+            msg = "A weather event:Temperature: " +weather.getTemperature();
             props.setHeader("region", weather.getRegion().toLowerCase());
             props.setHeader("event", weather.getEvent().toLowerCase());
         }

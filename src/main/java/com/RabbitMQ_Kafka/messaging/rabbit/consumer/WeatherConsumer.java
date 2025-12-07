@@ -23,17 +23,17 @@ public class WeatherConsumer {
 
     }
 
-    @RabbitListener(queues = "${sample.rabbitmq.karadeniz.storm.all.queue}")
-    public void handleKaradenizStormAll(byte[] msg) {
+    @RabbitListener(queues = "${sample.rabbitmq.blacksea.storm.all.queue}")
+    public void handleBlackseaStormAll(byte[] msg) {
         String message = new String(msg, StandardCharsets.UTF_8);
-        System.out.println("handleKaradenizStormAll: " + message);
+        System.out.println("handleBlackSeaStormAll: " + message);
 
     }
 
-    @RabbitListener(queues = "${sample.rabbitmq.karadeniz.any.queue}")
-    public void handleKaradenizAny(byte[] msg) {
+    @RabbitListener(queues = "${sample.rabbitmq.blacksea.any.queue}")
+    public void handleBlackseaAny(byte[] msg) {
         String message = new String(msg, StandardCharsets.UTF_8);
-        System.out.println("handleKaradenizAny: " + message);
+        System.out.println("handleBlackSeaAny: " + message);
 
     }
 }
