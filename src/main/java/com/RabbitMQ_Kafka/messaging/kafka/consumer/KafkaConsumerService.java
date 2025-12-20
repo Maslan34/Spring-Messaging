@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class KafkaConsumerService {
 
-    @KafkaListener(topics = "string-topic", groupId = "string-group", containerFactory = "stringKafkaListenerFactory")
+    @KafkaListener(topics = "string-topic", groupId = "string-topic", containerFactory = "stringKafkaListenerFactory")
     public void listen(String message) {
         System.out.println("Consumed message: " + message);
     }
 
-    @KafkaListener(topics = "json-topic", groupId = "email-group", containerFactory = "genericKafkaListenerFactory")
+    @KafkaListener(topics = "json-topic", groupId = "json-topic", containerFactory = "genericKafkaListenerFactory")
     public void consume(Email email) {
         System.out.println("Received Email: " + email);
     }

@@ -1,8 +1,46 @@
-version: '3.8'
-
 services:
 
-  # ZooKeeper servisi: Kafka'nın çalışabilmesi için gereklidir
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+# PostgreSQL (for Kafka Outbox Pattern) If you already have PostgreSQL installed, there may be a conflict.
+
+#  postgres:
+#    image: postgres:16
+#    container_name: postgres
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      POSTGRES_DB: kafka_outbox
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+
+
+
+
+  # ZooKeeper Service: It is required for Kafka to run
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: zookeeper
@@ -12,12 +50,12 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      test: [ "CMD", "nc", "-z", "localhost", "2181" ]
       interval: 30s
       timeout: 10s
       retries: 3
 
-  # İlk Kafka broker
+  # First Kafka broker
   kafka1:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka1
@@ -38,13 +76,14 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3
       KAFKA_MIN_IN_SYNC_REPLICAS: 2
+      KAFKA_LOG_RETENTION_MS: 30000  # default has been changed.
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
       interval: 30s
       timeout: 10s
       retries: 3
 
-  # İkinci Kafka broker
+  # Second Kafka broker
   kafka2:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka2
@@ -65,14 +104,16 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3
       KAFKA_MIN_IN_SYNC_REPLICAS: 2
+      KAFKA_LOG_RETENTION_MS: 30000
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9093"]
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9093" ]
       interval: 30s
       timeout: 10s
       retries: 3
 
-  # Üçüncü Kafka broker
+  # Third Kafka broker
   kafka3:
+
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka3
     depends_on:
@@ -80,7 +121,9 @@ services:
         condition: service_healthy
     ports:
       - "9094:9094"
+
     environment:
+
       KAFKA_BROKER_ID: 3
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
@@ -92,20 +135,64 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3
       KAFKA_MIN_IN_SYNC_REPLICAS: 2
+      KAFKA_LOG_RETENTION_MS: 30000  # default has been changed.
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9094"]
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9094" ]
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # Kafka UI (Opsiyonel - Kafka cluster'ını görselleştirmek için)
+    # Fourth Kafka broker (will listen only on SSL)
+#  kafka4:
+#    image: confluentinc/cp-kafka:7.5.0
+#    container_name: kafka4
+#    depends_on:
+#      zookeeper:
+#        condition: service_healthy
+#    ports:
+#      - "9095:9095"
+#
+#    environment:
+#      KAFKA_SSL_CLIENT_AUTH: none
+#      KAFKA_BROKER_ID: 4
+#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#
+#      KAFKA_LISTENERS: SSL://0.0.0.0:9095,PLAINTEXT_INTERNAL://0.0.0.0:29095
+#      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:9095,PLAINTEXT_INTERNAL://kafka4:29095
+#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,PLAINTEXT_INTERNAL:PLAINTEXT
+#      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+#
+#      # SSL - FILENAME + CREDENTIALS (BOTH ARE REQUIRED)
+#      KAFKA_SSL_KEYSTORE_FILENAME: kafka.server.keystore.jks
+#      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.server.keystore.jks
+#      KAFKA_SSL_KEYSTORE_CREDENTIALS: keystore_creds
+#      KAFKA_SSL_KEY_CREDENTIALS: key_creds
+#
+#      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.server.truststore.jks
+#      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.server.truststore.jks
+#      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: truststore_creds
+#
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+#      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+#      KAFKA_MIN_IN_SYNC_REPLICAS: 1
+#
+#    volumes:
+#      - ./certs:/etc/kafka/secrets/
+#
+#    healthcheck:
+#      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:29095" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#  # Kafka UI (Optional – to visualize the Kafka cluster)
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
-    depends_on:
-      - kafka1
-      - kafka2
-      - kafka3
+    #depends_on:
+      #- kafka1
+      #- kafka2
+      #- kafka3
     ports:
       - "8081:8080"
     environment:
@@ -125,3 +212,6 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1:29092
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8082
+volumes:
+  rabbitmq_data:
+  postgres_data:
